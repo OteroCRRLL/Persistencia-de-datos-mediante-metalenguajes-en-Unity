@@ -33,6 +33,29 @@ public sealed class SaveGameService : MonoBehaviour
     private void Update()
     {
         currentSessionPlayTime += Time.deltaTime;
+
+        if (Input.GetKeyDown(KeyCode.L))
+        {
+            DeleteSaveData();
+            ResetGameToDefault();
+            previousPlayTime = 0f;
+            currentSessionPlayTime = 0f;
+        }
+    }
+
+    private void DeleteSaveData()
+    {
+        string savePathJson = Path.Combine(Application.persistentDataPath, $"{SAVE_FILE_NAME}.json");
+        string backupPathJson = Path.Combine(Application.persistentDataPath, $"{SAVE_FILE_NAME}_backup.json");
+        string savePathXml = Path.Combine(Application.persistentDataPath, $"{SAVE_FILE_NAME}.xml");
+        string backupPathXml = Path.Combine(Application.persistentDataPath, $"{SAVE_FILE_NAME}_backup.xml");
+
+        if (File.Exists(savePathJson)) File.Delete(savePathJson);
+        if (File.Exists(backupPathJson)) File.Delete(backupPathJson);
+        if (File.Exists(savePathXml)) File.Delete(savePathXml);
+        if (File.Exists(backupPathXml)) File.Delete(backupPathXml);
+
+        Debug.Log("Save data files deleted. Game reset.");
     }
 
     public void SaveGame()
