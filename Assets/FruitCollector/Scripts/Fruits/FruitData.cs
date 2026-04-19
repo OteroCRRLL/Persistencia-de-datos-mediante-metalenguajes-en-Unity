@@ -8,10 +8,12 @@ public sealed class FruitData : ScriptableObject
     [SerializeField] private string id;
     [SerializeField] private string displayName;
     [SerializeField] private Sprite sprite;
+    [SerializeField, Min(1)] private int maxStackSize = 10;
 
     public string Id => id;
     public string DisplayName => displayName;
     public Sprite Sprite => sprite;
+    public int MaxStackSize => maxStackSize;
 
 
     private void OnValidate()

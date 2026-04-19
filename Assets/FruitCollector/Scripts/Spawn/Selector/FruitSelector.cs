@@ -21,4 +21,14 @@ public class FruitSelector : MonoBehaviour, IFruitSelector
 
         return data;
     }
+
+    public FruitData GetFruitDataById(string id)
+    {
+        if (availableFruits == null) return null;
+        foreach (var d in availableFruits)
+        {
+            if (d != null && d.Id == id) return d;
+        }
+        return null;
+    }
 }

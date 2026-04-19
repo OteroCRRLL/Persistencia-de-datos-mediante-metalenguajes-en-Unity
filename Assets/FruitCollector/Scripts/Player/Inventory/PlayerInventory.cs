@@ -3,18 +3,39 @@ using UnityEngine;
 [DisallowMultipleComponent]
 public sealed class PlayerInventory : MonoBehaviour, IStorable
 {
-    // TODO: store items, stack amounts, etc.
+    [SerializeField] private int maxInventorySlots = 10;
+    public InventoryContainer Inventory { get; private set; }
 
+    private void Awake()
+    {
+        Inventory = new InventoryContainer(maxInventorySlots);
+    }
 
     public void Store(IPickable item)
     {
-        // TODO: implement inventory rules.
-        
-        
-        // For now, just log.
-        Debug.Log($"Picked: {item.DisplayName} ({item.Id})");
+        bool stored = Inventory.TryAdd(item.Id, item.DisplayName, 1, item.MaxStackSize);
+        if (stored)
+        {
+            Debug.Log($"Stored 1x {item.DisplayName} into inventory. Slots used: {GetUsedSlotsCount()}");
+        }
+        else
+        {
+            Debug.LogWarning($"Inventory is full! Could not store {item.DisplayName}.");
+        }
     }
 
+    private int GetUsedSlotsCount()
+    {
+        int count = 0;
+        foreach (var slot in Inventory.slots)
+        {
+            if (!string.IsNullOrEmpty(slot.ItemId))
+            {
+                count++;
+            }
+        }
+        return count;
+    }
 
     private void OnTriggerEnter2D(Collider2D other)
     {

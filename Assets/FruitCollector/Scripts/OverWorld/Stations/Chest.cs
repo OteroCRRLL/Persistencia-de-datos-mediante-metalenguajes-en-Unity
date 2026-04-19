@@ -7,13 +7,15 @@ public sealed class Chest : MonoBehaviour, IInteractable
     public static readonly int ANIMATOR_OPENED_HASH = Animator.StringToHash("Opened");
 
     [SerializeField] private string chestId = "chest_01";
+    [SerializeField] private int maxInventorySlots = 10;
 
     private EInteractionState InteractionState;
     private Collider2D triggerCollider;
     private Animator animator;
+    private IInteractor currentInteractor;
 
     public string ChestId => chestId;
-
+    public InventoryContainer Inventory { get; private set; }
 
     private void Awake()
     {
@@ -21,6 +23,7 @@ public sealed class Chest : MonoBehaviour, IInteractable
         triggerCollider.isTrigger = true;
 
         animator = GetComponent<Animator>();
+        Inventory = new InventoryContainer(maxInventorySlots);
     }
 
 
@@ -29,6 +32,7 @@ public sealed class Chest : MonoBehaviour, IInteractable
         if (interactor == null) return;
 
         Debug.Log($"Chest '{chestId}' interacted by {interactor.Transform.name}");
+        currentInteractor = interactor;
         
         if (!animator.GetBool(ANIMATOR_OPENED_HASH)) Open();
         else Close();
@@ -40,9 +44,11 @@ public sealed class Chest : MonoBehaviour, IInteractable
         InteractionState = EInteractionState.INTERACTING;
         animator.SetBool(ANIMATOR_OPENED_HASH, true);
 
-        // TODO: Show and apply store logic.
-
-
+        PlayerInventory playerInventory = currentInteractor.Transform.GetComponent<PlayerInventory>();
+        if (playerInventory != null)
+        {
+            TransferUIManager.Instance.OpenTransferUI(playerInventory, this);
+        }
     }
 
 
@@ -50,6 +56,12 @@ public sealed class Chest : MonoBehaviour, IInteractable
     {
         InteractionState = EInteractionState.FINISHED;
         animator.SetBool(ANIMATOR_OPENED_HASH, false);
+        currentInteractor = null;
+        
+        if (TransferUIManager.Instance != null && TransferUIManager.Instance.IsOpen)
+        {
+            TransferUIManager.Instance.CloseTransferUI();
+        }
     }
 
 

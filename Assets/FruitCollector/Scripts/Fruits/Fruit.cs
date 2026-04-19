@@ -11,6 +11,7 @@ public sealed class Fruit : MonoBehaviour, IPickable
 
     public string Id => data != null ? data.Id : string.Empty;
     public string DisplayName => data != null ? data.DisplayName : "(Fruit)";
+    public int MaxStackSize => data != null ? data.MaxStackSize : 10;
 
     private void Awake()
     {

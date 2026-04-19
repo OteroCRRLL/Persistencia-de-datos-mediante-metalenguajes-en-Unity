@@ -1,4 +1,5 @@
 public interface IFruitSelector
 {
-    public FruitData PickRandomFruitData();
+    FruitData PickRandomFruitData();
+    FruitData GetFruitDataById(string id);
 }
